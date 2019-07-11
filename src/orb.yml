@@ -23,11 +23,6 @@ commands:
       - run:
           name: Setup VPNC IPSec tunnel inside docker container
           command: |
-            curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/master/Dockerfile
-            # build docker image which will create the IPSec tunnel
-            docker build . --build-arg \
-              circleCIDeployKey=$DEPLOY_SECRET -t vpn_deploy
-
             cat \<<EOF >tunnel.conf
             IPSec gateway "$CTX_VPNC_GATEWAY"
             IPSec ID "$CTX_VPNC_ID"
@@ -35,6 +30,12 @@ commands:
             Xauth username "$CTX_VPNC_XAUTH_USERNAME"
             Xauth password "$CTX_VPNC_XAUTH_PASSWD"
             EOF
+
+            curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/master/Dockerfile
+            # build docker image which will create the IPSec tunnel
+            docker build . --build-arg deployScript=<<parameters.deploy-script>>\
+              circleCIDeployKey=$DEPLOY_SECRET -t vpn_deploy
+
       - run:
           name: Finalize deploy script
           command: |
