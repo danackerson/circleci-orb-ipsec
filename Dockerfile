@@ -1,6 +1,6 @@
 FROM ubuntu
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends network-manager-vpnc
+RUN apt-get install -y --no-install-recommends network-manager-vpnc openssh-client
 ARG circleCIDeployKey
 ARG deployScript
 

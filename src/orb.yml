@@ -34,7 +34,7 @@ commands:
             curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/master/Dockerfile
             # build docker image which will create the IPSec tunnel
             docker build . --build-arg deployScript=<<parameters.deploy-script>>\
-              circleCIDeployKey=$DEPLOY_SECRET -t vpn_deploy
+              --build-arg circleCIDeployKey=$DEPLOY_SECRET -t vpn_deploy
 
       - run:
           name: Finalize deploy script
