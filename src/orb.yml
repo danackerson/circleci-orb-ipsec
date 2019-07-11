@@ -1,0 +1,54 @@
+version: 2.1
+description: Using IPSec VPN connectivity from Ubuntu, manage deployment thru tunnel.
+
+jobs:
+  remote-deploy:
+    parameters:
+      deploy-script:
+        description: path to executable file for deployment
+        type: string
+        default: deploy_script.sh
+    executor: machine-ubuntu
+    steps:
+      - deploy-docker-vpn:
+          deploy-script: <<parameters.deploy-script>>
+
+commands:
+  deploy-docker-vpn:
+    parameters:
+      deploy-script:
+        type: string
+    description: Install & configure IPSec VPN
+    steps:
+      - run:
+          name: Setup VPNC IPSec tunnel inside docker container
+          command: |
+            curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/master/Dockerfile
+            # build docker image which will create the IPSec tunnel
+            docker build . --build-arg \
+              circleCIDeployKey=$DEPLOY_SECRET -t vpn_deploy
+
+            cat \<<EOF >tunnel.conf
+            IPSec gateway "$CTX_VPNC_GATEWAY"
+            IPSec ID "$CTX_VPNC_ID"
+            IPSec secret "$CTX_VPNC_SECRET"
+            Xauth username "$CTX_VPNC_XAUTH_USERNAME"
+            Xauth password "$CTX_VPNC_XAUTH_PASSWD"
+            EOF
+      - run:
+          name: Finalize deploy script
+          command: |
+            echo -e "/usr/sbin/vpnc tunnel\n$(cat <<parameters.deploy-script>>)" \
+              > <<parameters.deploy-script>>
+            echo "/usr/sbin/vpnc disconnect" >> <<parameters.deploy-script>>
+      - run:
+          name: Deploy payload thru docker IPSec tunnel
+          command: |
+            # start the IPSec tunnel and deploy the bender bot artifacts to the PI
+            sudo docker run --cap-add=NET_ADMIN --device=/dev/net/tun \
+              vpn_deploy ./deploy_script.sh
+
+executors:
+  machine-ubuntu:
+    machine:
+      image: ubuntu-1604:201903-01
