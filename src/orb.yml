@@ -21,6 +21,12 @@ commands:
     description: Install & configure IPSec VPN
     steps:
       - run:
+          name: Finalize deploy script
+          command: |
+            echo -e "/usr/sbin/vpnc tunnel\n$(cat <<parameters.deploy-script>>)" \
+              > <<parameters.deploy-script>>
+            echo "/usr/sbin/vpnc disconnect" >> <<parameters.deploy-script>>
+      - run:
           name: Setup VPNC IPSec tunnel inside docker container
           command: |
             cat \<<EOF >tunnel.conf
@@ -35,13 +41,6 @@ commands:
             # build docker image which will create the IPSec tunnel
             docker build . --build-arg deployScript=<<parameters.deploy-script>>\
               --build-arg circleCIDeployKey=$DEPLOY_SECRET -t vpn_deploy
-
-      - run:
-          name: Finalize deploy script
-          command: |
-            echo -e "/usr/sbin/vpnc tunnel\n$(cat <<parameters.deploy-script>>)" \
-              > <<parameters.deploy-script>>
-            echo "/usr/sbin/vpnc disconnect" >> <<parameters.deploy-script>>
       - run:
           name: Deploy payload thru docker IPSec tunnel
           command: |
