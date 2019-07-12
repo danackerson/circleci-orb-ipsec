@@ -43,11 +43,17 @@ commands:
             --build-arg DEPLOY_SCRIPT_FILENAME=<<parameters.deploy-script>> \
             --build-arg SERVER_DEPLOY_KEY=$DEPLOY_SECRET -t vpn_deploy
       - run:
+          name: ORB IPSec - notify bender slackbot of VPN connection
+          command: |
+            curl -s -X POST \
+            "https://slack.com/api/chat.postMessage?token=$CTX_SLACK_API_TOKEN&channel=$CTX_SLACK_CHANNEL&text=%3Acircleci%3A%20Preparing%20*VPN*%20deploy%20of%20%3Chttps%3A%2F%2Fcircleci.com%2Fapi%2Fv1.1%2Fproject%2Fgithub%2F${CIRCLE_PROJECT_USERNAME}%2F${CIRCLE_PROJECT_REPONAME}%2F${CIRCLE_BUILD_NUM}%7C${CIRCLE_PROJECT_REPONAME}%20b${CIRCLE_BUILD_NUM}%3E"
+
+      - run:
           name: ORB IPSec - Deploy payload thru docker IPSec tunnel
           command: |
             # start the IPSec tunnel and deploy the bender bot artifacts to the PI
             sudo docker run --cap-add=NET_ADMIN --device=/dev/net/tun \
-              vpn_deploy ./deploy_script.sh
+              -v /tmp:/tmp vpn_deploy ./deploy_script.sh
 
 executors:
   machine-ubuntu:
