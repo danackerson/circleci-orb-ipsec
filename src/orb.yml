@@ -39,8 +39,9 @@ commands:
 
             curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/master/Dockerfile
             # build docker image which will create the IPSec tunnel
-            docker build . --build-arg deployScript=<<parameters.deploy-script>>\
-              --build-arg circleCIDeployKey=$DEPLOY_SECRET -t vpn_deploy
+            docker build . \
+            --build-arg DEPLOY_SCRIPT_FILENAME=<<parameters.deploy-script>> \
+            --build-arg SERVER_DEPLOY_KEY=$DEPLOY_SECRET -t vpn_deploy
       - run:
           name: ORB IPSec - Deploy payload thru docker IPSec tunnel
           command: |
