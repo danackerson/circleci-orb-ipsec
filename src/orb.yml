@@ -41,7 +41,7 @@ commands:
             # build docker image which will create the IPSec tunnel
             docker build . \
             --build-arg DEPLOY_SCRIPT_FILENAME=<<parameters.deploy-script>> \
-            --build-arg SERVER_DEPLOY_KEY=$DEPLOY_SECRET -t vpn_deploy
+            --build-arg SERVER_DEPLOY_KEY=$CTX_SERVER_DEPLOY_SECRET -t vpn_deploy
       - run:
           name: ORB IPSec - notify bender slackbot of VPN connection
           command: |
@@ -53,7 +53,7 @@ commands:
           command: |
             # start the IPSec tunnel and deploy the bender bot artifacts to the PI
             sudo docker run --cap-add=NET_ADMIN --device=/dev/net/tun \
-              -v /tmp:/tmp vpn_deploy ./deploy_script.sh
+              -v /tmp:/tmp -v /mnt:/mnt vpn_deploy ./deploy_script.sh
 
 executors:
   machine-ubuntu:
