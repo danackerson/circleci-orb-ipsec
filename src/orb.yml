@@ -29,26 +29,23 @@ commands:
       - run:
           name: ORB IPSec - Setup VPNC IPSec tunnel inside docker container
           command: |
-            # just increment this to rebuild image (e.g. on update of $CTX vars)
-            IPSEC_IMG_VERSION=v1
-
             docker login -u $CTX_DOCKER_USER -p $CTX_DOCKER_PASS
-            if curl --silent -f -lSL https://hub.docker.com/v2/repositories/danackerson/vpn_deploy/tags/$IPSEC_IMG_VERSION; then
-              docker pull danackerson/vpn_deploy:$IPSEC_IMG_VERSION
+            if docker pull danackerson/vpn_deploy:$IPSEC_IMG_VERSION; then
+              echo "Using existing $IPSEC_IMG_VERSION for deploy..."
             else
-              cat \<<EOF >tunnel.conf
-              IPSec gateway "$CTX_VPNC_GATEWAY"
-              IPSec ID "$CTX_VPNC_ID"
-              IPSec secret "$CTX_VPNC_SECRET"
-              Xauth username "$CTX_VPNC_XAUTH_USERNAME"
-              Xauth password "$CTX_VPNC_XAUTH_PASSWD"
-              EOF
+            cat \<<EOF >tunnel.conf
+            IPSec gateway "$CTX_VPNC_GATEWAY"
+            IPSec ID "$CTX_VPNC_ID"
+            IPSec secret "$CTX_VPNC_SECRET"
+            Xauth username "$CTX_VPNC_XAUTH_USERNAME"
+            Xauth password "$CTX_VPNC_XAUTH_PASSWD"
+            EOF
 
               curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/master/Dockerfile
               # build docker image which will create the IPSec tunnel
               docker build . \
               --build-arg DEPLOY_SCRIPT_FILENAME=<<parameters.deploy-script>> \
-              --build-arg SERVER_DEPLOY_KEY=$CTX_SERVER_DEPLOY_SECRET -t vpn_deploy:$IPSEC_IMG_VERSION
+              --build-arg SERVER_DEPLOY_KEY=$CTX_SERVER_DEPLOY_SECRET -t danackerson/vpn_deploy:$IPSEC_IMG_VERSION
 
               docker push danackerson/vpn_deploy:$IPSEC_IMG_VERSION
             fi
@@ -63,7 +60,7 @@ commands:
           command: |
             # start the IPSec tunnel and deploy the bender bot artifacts to the PI
             sudo docker run --cap-add=NET_ADMIN --device=/dev/net/tun \
-              -v /tmp:/tmp -v /mnt:/mnt vpn_deploy:$IPSEC_IMG_VERSION ./deploy_script.sh
+              -v /tmp:/tmp -v /mnt:/mnt danackerson/vpn_deploy:$IPSEC_IMG_VERSION ./deploy_script.sh
 
 executors:
   machine-ubuntu:
