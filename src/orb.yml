@@ -22,8 +22,6 @@ commands:
         type: string
     description: Install & configure IPSec VPN
     steps:
-      - attach_workspace:
-          at: /tmp
       - run:
           name: ORB IPSec - Finalize deploy script
           command: |
@@ -45,10 +43,6 @@ commands:
             Xauth password "$CTX_VPNC_XAUTH_PASSWD"
             EOF
 
-            ls -lrt /tmp
-
-            ls -lrt
-
             curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/master/Dockerfile
             # build docker image which will create the IPSec tunnel
             docker build . \
@@ -66,7 +60,6 @@ commands:
           name: ORB IPSec - Deploy payload thru docker IPSec tunnel
           command: |
             # start the IPSec tunnel and deploy the bender bot artifacts to the PI
-            ls -lrt /tmp
             sudo docker run --cap-add=NET_ADMIN --device=/dev/net/tun \
               -v /tmp:/tmp danackerson/vpn_deploy:$IPSEC_IMG_VERSION <<parameters.deploy-script>>
 
