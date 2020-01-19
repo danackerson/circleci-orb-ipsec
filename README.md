@@ -1,6 +1,8 @@
 # circleci-orb-ipsec
 To deploy from circleci thru an ipsec tunnel.
 
+export CIRCLECI_CLI_TOKEN=xyz123
+
 ## CHANGING:
 `circleci orb publish orb.yml danackerson/ipsec@dev:<msg>`
 
