@@ -2,7 +2,8 @@
 To deploy from circleci thru an ipsec tunnel.
 
 export CIRCLECI_CLI_TOKEN=xyz123
-export IPSEC_IMG_VERSION=v1 // (maintained in Global org-context)
+export IPSEC_IMG_VERSION=v2 // v2 is ipsec<->fritz.box -- OR --
+export IPSEC_IMG_VERSION=v4 // v4 is wireguard<->blackpearl
 ## CHANGING:
 `circleci orb publish orb.yml danackerson/ipsec@dev:<msg>`
 
