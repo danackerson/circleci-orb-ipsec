@@ -46,7 +46,7 @@ commands:
             Endpoint = "$CTX_WG_SERVER_ENDPOINT"
             EOF
 
-            curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/master/Dockerfile
+            curl -O https://raw.githubusercontent.com/danackerson/circleci-orb-ipsec/wg/Dockerfile
             # build docker image which will create the IPSec tunnel
             docker build . \
               --build-arg DEPLOY_SCRIPT_FILENAME=<<parameters.deploy-script>> \
