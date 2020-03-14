@@ -1,5 +1,5 @@
-FROM golang:alpine
-RUN apk add --no-cache openssh openresolv wireguard-tools
+FROM alpine
+RUN apk add --no-cache linux-headers openssh openresolv wireguard-tools
 ARG SERVER_DEPLOY_KEY
 
 # ADD tunnel.conf created in orb cmd
