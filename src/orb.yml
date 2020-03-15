@@ -62,8 +62,14 @@ commands:
       - run:
           name: ORB IPSec - Deploy payload thru docker IPSec tunnel
           command: |
+            # install wireguard module
+            sudo apt update
+            sudo apt-get install software-properties-common
+            sudo add-apt-repository -y ppa:wireguard/wireguard
+            sudo apt install wireguard
+
             # start the IPSec tunnel and deploy the bender bot artifacts to the PI
-            sudo docker run --cap-add=NET_ADMIN -v /tmp:/tmp \
+            sudo docker run --privileged -v /lib/modules:/lib/modules -v /tmp:/tmp \
               danackerson/vpn_deploy:$IPSEC_IMG_VERSION <<parameters.deploy-script>>
 
 executors:
