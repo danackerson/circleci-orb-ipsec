@@ -1,5 +1,5 @@
 FROM alpine
-RUN apk add --no-cache wireguard-tools
+RUN apk add --no-cache openssh wireguard-tools
 ARG SERVER_DEPLOY_KEY
 
 # ADD tunnel.conf created in orb cmd
