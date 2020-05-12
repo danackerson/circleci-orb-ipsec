@@ -76,4 +76,5 @@ commands:
 executors:
   machine-ubuntu:
     machine:
-      image: ubuntu-1604:202004-01
+      image: ubuntu-1604:201903-01
+      #image: ubuntu-1604:202004-01
