@@ -63,6 +63,7 @@ commands:
           name: ORB IPSec - Deploy payload thru docker IPSec tunnel
           command: |
             # install wireguard module
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 78BD65473CB3BD13
             sudo apt-get install software-properties-common
             sudo add-apt-repository -y ppa:wireguard/wireguard
             sudo apt update
@@ -75,4 +76,4 @@ commands:
 executors:
   machine-ubuntu:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-1604:202004-01
